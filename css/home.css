@@ -1,0 +1,18 @@
+body{
+    text-align: center;
+}
+.posts{
+    border-radius: 25px;
+    border: 2px solid lightblue;
+
+    width: 30%;
+    height: 150px;
+    margin-top: 3%;
+
+}
+
+
+#textBox{
+    width: 200px;
+    height: 100px;
+}
