@@ -46,19 +46,34 @@ let questionsArray = [];
  */
  function load() {
     getAllQuestions();
-    setTimeout(function () {
 
-        arrayString = JSON.stringify(questionsArray);
-        if (arrayString === null || questionsArray.length == 0) {
+}
+//submit comment
+function submitComment(){
+   
+    let name = document.getElementById("name").innerHTML;
+    let username = document.getElementById("username").innerHTML;
+    let i = 0;
+    let text = document.getElementById("textBox").value;
 
-            let parag = document.createElement("p");
-            let para = document.createTextNode("No posts found created.");
-            parag.appendChild(para);
-            let divElement = document.getElementById("mainPost");
-            divElement.appendChild(parag);
-
-        } else {
-            load();
+    let obj = {
+      //  index: questionsArray.length ,
+   
+        uid: 1,
+        pid: 1,
+        msg: text,
+  
+    }
+    console.log(obj);
+    console.log("submission: " + name + " " + text); 
+    xhttp.open(POST, endPointRoot + "post/submit", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify(obj));
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("looks like client side is working");
         }
-    }, 3000);
+    };
+
+   // XMLHttpRequestUpload();
 }

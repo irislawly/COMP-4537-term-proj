@@ -6,6 +6,7 @@ const endPointRoot = "https://www.irislawcst.com/COMP4537/labs/termproject/API/V
 const GET = "GET";
 const PUT = "PUT";
 const POST = "POST";
+const DELETE = "DELETE";
 
 let count = 1;
 let score = 0;
@@ -31,8 +32,9 @@ function getAllQuestions() {
 
             q.then((dbQuestions) => {
                 console.log('Retrieved items');
+                
                 for (let i = 0; i < dbQuestions.length ; i++) {
-                    console.log("hi" + dbQuestions[i]["likes"]);
+                    console.log("hi" + dbQuestions[i]["index"]);
                     questionsArray.push(dbQuestions[i]);
 
                     let postDiv = document.createElement("div");
@@ -42,6 +44,10 @@ function getAllQuestions() {
                     postUser.appendChild(para);
                     let moreButt = document.createElement("button");
                     moreButt.innerHTML = "View More"
+                    let deleteButt = document.createElement("button");
+                    deleteButt.setAttribute("onclick", "deletePost("+i+")");
+                    deleteButt.setAttribute("id" , "deleteButt_"+i);
+                    deleteButt.innerHTML = "Delete"
 
                     let textPara = document.createElement("p");
 
@@ -55,6 +61,7 @@ function getAllQuestions() {
 
                     postDiv.appendChild(postUser);
                     postDiv.appendChild(moreButt);
+                    postDiv.appendChild(deleteButt);
                     postDiv.appendChild(textPara);
                   //  postDiv.appendChild(likesPara);
                     postDiv.appendChild(likeButt);
@@ -70,11 +77,17 @@ function getAllQuestions() {
 }
 
 function addLike(i){
-    console.log("clicked like " + i + questionsArray[i].likes);
-    let l = questionsArray[i].likes ;
+ console.log("Likes: " + i);
+ let l = 0;
+
+     l =questionsArray[i].likes ;
+  
+     
+ 
+   
     l++;
     let obj = {
-        index: i,
+        index: questionsArray[i].index,
         likes: l,
     }
     document.getElementById("likeButt_"+i).innerHTML=l + " Likes";
@@ -96,18 +109,38 @@ function load() {
     getAllQuestions();
 }
 
+function deletePost(i){
+    console.log("clicked delete " + i );
+    let obj = {
+        index: questionsArray[i].index,
+    
+    }
+    xhttp.open(DELETE, endPointRoot + "home/delete", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify(obj));
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("Put on the client side is working");
+        }
+
+    }
+}
+
 function submitPost() {
-    console.log("submit " + questionsArray.length+1);
+   
     let name = document.getElementById("name").innerHTML;
     let username = document.getElementById("username").innerHTML;
-    let text = document.getElementById("textBox").innerHTML;
+    let i = 0;
+    let text = document.getElementById("textBox").value;
 
     let obj = {
-        index: questionsArray.length ,
+      //  index: questionsArray.length ,
+        id: i,
         msg: text,
         likes: "0",
     }
-    console.log("submission: " + name + text); 
+    console.log(obj);
+    console.log("submission: " + name + " " + text); 
     xhttp.open(POST, endPointRoot + "home/submit", true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSON.stringify(obj));

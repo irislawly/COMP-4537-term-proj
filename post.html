@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <!--  <link rel="stylesheet" type="text/css" href="css/post.css"> -->
-    <title>Post Side</title>
+  <link rel="stylesheet" type="text/css" href="css/post.css"> 
+    <title>Home Side</title>
 </head>
 
 <body onload="load()">
@@ -16,13 +16,30 @@
     </div>
 
     <div id="mainPost">
-        Post <br>
-    <button id="likeButton">Like</button>
+
+    <div>Post page</div>
+    
+    <div class="posts" id="selfPost">
+        <div id="name">DemoAcc</div>
+        <div id="username">demoUsername</div>
+        <textarea id="textBox">Fill in here</textarea>
+        <button id="submit" onclick="submitComment()">Submit</button>
     </div>
 
-    <div>Reply?</div>
+    <div id="timelineDiv">
+        <!--
+        <div class="posts">
+            <button id="like" class="likeButton">View more</button>
+            <div>Demo Law</div>
+            <div>demolawly</div>
+       
+            <p class="textBox">Demo text area</p>
+            <div class="likesNum">X Likes</div>
+            <button id="like" class="likeButton">Like</button>
+        </div> 
+-->
+    </div>
 
-    <div>Comments</div>
 
 
     <!-- the link to the javascript -->
