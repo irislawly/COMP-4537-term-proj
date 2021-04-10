@@ -92,6 +92,15 @@ app.delete(endPointRoot + "home/delete", (req, res) => {
                 console.log(result);
         });
 
+        let q2 = "DELETE FROM commentUserPost WHERE postID = '" + postObj.index + "'";
+ 
+        db.query(q2,(err, result) => {
+                if (err) {
+                    throw err;
+                };
+                console.log(result);
+        });
+
 
     })
     //update stat table
@@ -281,7 +290,7 @@ app.post(endPointRoot + "user", (req, res) => {
         req.jsonBody = JSON.parse(data);
         postObj = req.jsonBody;
         let objArray = [];
-        db.query("SELECT * FROM user WHERE username = '"+postObj.name+"' ", (err, result) => {
+        db.query("SELECT * FROM user WHERE username = '"+postObj.name+"' AND password = '"+ postObj.pass +"'", (err, result) => {
             if(result.length == 0){
                 res.send(objArray);
             }
@@ -317,7 +326,8 @@ app.post(endPointRoot + "user/new", (req, res) => {
         req.rawBody = data;
         req.jsonBody = JSON.parse(data);
         postObj = req.jsonBody;
-        let q = "INSERT INTO `user` (`username`, `password`) VALUES ('"+postObj.name+"', '"+postObj.pass+"');"
+    //    let q = "INSERT INTO `user` (`username`, `password`, 'admin') VALUES ('"+postObj.name+"', '"+postObj.pass+"', 0);"
+    let q = "INSERT INTO `user` ( `username`, `password`, `admin`) VALUES ( '"+postObj.name+"', '"+postObj.pass+"', '0');"
        db.query(q,(err, result) => {
                 if (err) {
                     throw err;
@@ -327,9 +337,37 @@ app.post(endPointRoot + "user/new", (req, res) => {
 
     })
     //update stat table
-    updateStat("'POST'", "'%user/new'");
+   updateStat("'POST'", "'%user/new'");
     })
 
+    //delete comment
+    //delete
+app.delete(endPointRoot + "post/comment", (req, res) => {
+
+    let data = "";
+    let postObj = "";
+    req.on('data', function (otherData) {
+        data += otherData
+    })
+    req.on('end', function () {
+        req.rawBody = data;
+        req.jsonBody = JSON.parse(data);
+        postObj = req.jsonBody;
+        console.log("delete" + postObj);
+        let q = "DELETE FROM commentUserPost WHERE commentID = '" + postObj.index + "'";
+ 
+        db.query(q,(err, result) => {
+                if (err) {
+                    throw err;
+                };
+                console.log(result);
+        });
+
+
+    })
+    //update stat table
+    updateStat("'DELETE'", "'%post/comment%'");
+});
 
 //Updates admin stat table
 function updateStat(method, ep) {

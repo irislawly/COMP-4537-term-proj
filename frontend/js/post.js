@@ -6,12 +6,13 @@ const endPointRoot = "https://www.irislawcst.com/COMP4537/labs/termproject/API/V
 const GET = "GET";
 const PUT = "PUT";
 const POST = "POST";
-
+const DELETE = "DELETE";
 let count = 1;
 let score = 0;
 let arrayString
 let postArray = [];
-
+let commentArray = [];
+let isAdmin = false;
 /**
  * Get all questions.
  */
@@ -38,15 +39,15 @@ let postArray = [];
                         let postCont = document.getElementById("postDiv");      
                         let postDiv = document.createElement("div");
                         postDiv.setAttribute("class", "posts");
-                        let postUser = document.createElement("div");
-                        let para = document.createTextNode(dbQuestions[i]["username"]+ " " + i);
-                        postUser.appendChild(para);
+                        let postUser = document.createElement("h3");
+                        postUser.innerHTML =  dbQuestions[i]["username"];
                         let textPara = document.createElement("p");
                         textPara.innerHTML = dbQuestions[i]["msg"];
                         let likeButt = document.createElement("button");
                         likeButt.setAttribute("onclick", "addLike("+i+")");
                         likeButt.setAttribute("id" , "likeButt_"+i);
                         likeButt.innerHTML =  dbQuestions[i]["likes"] + " Likes";
+                        likeButt.setAttribute("class", "like");
                         postDiv.appendChild(postUser);
                         postDiv.appendChild(textPara);
                         postDiv.appendChild(likeButt);
@@ -92,6 +93,10 @@ function addLike(i){
  */
  function load() {
     window.onload = console.log(localStorage.getItem("postNum"));
+    if(localStorage.getItem("userNum") == 1){
+        isAdmin = true;
+        console.log(isAdmin);
+    }
     if(localStorage.getItem("postNum") == null){
         alert("No post chosen.");
     }
@@ -120,15 +125,26 @@ function getComments(){
                 console.log('Retrieved items');
                 for (let i= 0; i < dbQuestions.length; i++) {
                     console.log( dbQuestions[i]);       
-                         
+                    commentArray.push(dbQuestions[i]); 
                         let postCont = document.getElementById("commentDiv");      
                         let postDiv = document.createElement("div");
                         postDiv.setAttribute("class", "posts");
-                        let postUser = document.createElement("div");
-                        let para = document.createTextNode("Demo name " + dbQuestions[i]["name"] + i);
-                        postUser.appendChild(para);
+                        let postUser = document.createElement("h3");
+                        postUser.innerHTML =  dbQuestions[i]["name"];
+           
                         let textPara = document.createElement("p");
                         textPara.innerHTML = dbQuestions[i]["msg"];
+                        let deleteButt = document.createElement("button");
+                        deleteButt.setAttribute("onclick", "deleteComment("+i+")");
+                        deleteButt.setAttribute("id" , "deleteButt_"+i);
+                        deleteButt.innerHTML = "Delete"
+                        deleteButt.setAttribute("class", "del");
+
+                  
+                        if(isAdmin==true){
+                            document.getElementById("name").innerHTML = "Admin";
+                            postDiv.appendChild(deleteButt);
+                        }
                         postDiv.appendChild(postUser);
                         postDiv.appendChild(textPara);
                         postCont.appendChild(postDiv);
@@ -140,6 +156,24 @@ function getComments(){
         }
     };
 
+}
+
+function deleteComment(i){
+    console.log("pressed delte" + i);
+    console.log(commentArray[i]);
+    let obj = {
+        index: commentArray[i].index,
+    
+    }
+    xhttp.open(DELETE, endPointRoot + "post/comment", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify(obj));
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            console.log("Put on the client side is working");
+        }
+    }
+    reload(1000);
 }
 //submit comment
 function submitComment(){
@@ -165,8 +199,15 @@ function submitComment(){
     xhttp.onreadystatechange = function () {
         if (this.readyState == 4 && this.status == 200) {
             console.log("looks like client side is working");
+        
         }
     };
+  reload(3500);
 
-   // XMLHttpRequestUpload();
+}
+
+function reload(time){
+    setTimeout(function(){
+        window.location.reload(1);
+     }, time);
 }

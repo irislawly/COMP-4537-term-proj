@@ -12,7 +12,7 @@ let count = 1;
 let score = 0;
 let arrayString;
 let questionsArray = [];
-
+let isAdmin = false;
 /**
  * Get all questions.
  */
@@ -31,42 +31,53 @@ function getAllQuestions() {
             let postCont = document.getElementById("timelineDiv");
 
             q.then((dbQuestions) => {
+             
                 console.log('Retrieved items');
-                console.log( dbQuestions[0]["username"]);
-                for (let i = 0; i < dbQuestions.length ; i++) {
+                console.log( dbQuestions[0]);
            
+                if(localStorage.getItem("userNum") == 1){
+                    isAdmin = true;
+                    console.log(isAdmin);
+                }
+              
+                for (let i = 0; i < dbQuestions.length ; i++) {
+                 
                     questionsArray.push(dbQuestions[i]);
-
                     let postDiv = document.createElement("div");
                     postDiv.setAttribute("class", "posts");
-                    let postUser = document.createElement("div");
-                    let para = document.createTextNode( dbQuestions[i]["username"] + " " + i);
-                    postUser.appendChild(para);
+                    let postUser = document.createElement("h3");
+                    postUser.innerHTML =  dbQuestions[i]["username"];
                     let moreButt = document.createElement("button");
                     moreButt.setAttribute("onclick", "viewPost("+i+")");
                     moreButt.setAttribute("id" , "viewButt_"+i);
+                    moreButt.setAttribute("class", "view");
                     moreButt.innerHTML = "View More"
                     let deleteButt = document.createElement("button");
                     deleteButt.setAttribute("onclick", "deletePost("+i+")");
                     deleteButt.setAttribute("id" , "deleteButt_"+i);
+                    deleteButt.setAttribute("class", "del");
                     deleteButt.innerHTML = "Delete"
 
                     let textPara = document.createElement("p");
-
+                    textPara.setAttribute("class", "bubble");
                     textPara.innerHTML = dbQuestions[i]["msg"];
-               //     let likesPara = document.createElement("p");
-                //    likesPara.innerHTML = dbQuestions[i]["likes"] + " Likes";
                     let likeButt = document.createElement("button");
                     likeButt.setAttribute("onclick", "addLike("+i+")");
                     likeButt.setAttribute("id" , "likeButt_"+i);
+                    likeButt.setAttribute("class", "like");
                     likeButt.innerHTML =  dbQuestions[i]["likes"] + " Likes";
 
-                    postDiv.appendChild(postUser);
-                    postDiv.appendChild(moreButt);
+      
+                   
+                    if(isAdmin==true){
+                    document.getElementById("name").innerHTML = "Admin";
                     postDiv.appendChild(deleteButt);
+                    }
+                    postDiv.appendChild(postUser);
                     postDiv.appendChild(textPara);
-                  //  postDiv.appendChild(likesPara);
+
                     postDiv.appendChild(likeButt);
+                    postDiv.appendChild(moreButt);
                     postCont.appendChild(postDiv);
 
                 }
@@ -119,27 +130,19 @@ function deletePost(i){
         }
 
     }
+    reload(1000);
 }
 
 function viewPost(i){
-    console.log("clicked viewPost: " + questionsArray[i].index );
-    let obj = {
-        index: questionsArray[i].index,
-    
-    }
     localStorage.setItem("postNum", questionsArray[i].index);
     window.location.href = './post.html';
  
 }
 
 function submitPost() {
-   
     let name = document.getElementById("name").innerHTML;
-    let i = 0;
     let text = document.getElementById("textBox").value;
-
     let obj = {
- 
         id: localStorage.getItem("userNum"),
         msg: text,
         likes: "0",
@@ -154,6 +157,12 @@ function submitPost() {
             console.log("looks like client side is working");
         }
     };
+    reload(3250);
+   
+}
 
-   // XMLHttpRequestUpload();
+function reload(time){
+    setTimeout(function(){
+        window.location.reload(1);
+     }, time);
 }

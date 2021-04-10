@@ -12,6 +12,9 @@ let score = 0;
 let arrayString
 let questionsArray = [];
 
+let postArray = [];
+
+
 /**
  * Get all questions.
  */
@@ -67,7 +70,11 @@ let questionsArray = [];
  * Checks that database and size of page accurate.
  */
  function load() {
+    if(localStorage.getItem("userNum") == 1){
     getTable();
-
+    }else{
+        alert("Not admin! Try logging in right account.");
+        window.location.replace("./login.html")
+    }
 
 }

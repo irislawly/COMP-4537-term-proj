@@ -28,7 +28,6 @@ function submit() {
 
 function loginUser(name, pass) {
     let obj = {
-
         name: name,
         pass: pass
     }
@@ -59,7 +58,12 @@ function loginUser(name, pass) {
 
                     console.log('Account created.');
                     addUser( obj);
-                    alert("Try relogging");
+                
+                        setTimeout(function(){
+                            alert("Try relogging");
+                         }, 1000);
+                    
+                   
                 } else {
 
                     console.log('Account not created.');
@@ -91,8 +95,8 @@ function addUser( obj) {
                 window.location.href = './home.html';
 
             }).catch((dbQuestions) => {
-                console.log('Error');
-                //if not found, create new?
+                console.log('Error!');
+                
  
             })
         }
