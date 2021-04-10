@@ -16,7 +16,9 @@ app.use(function (req, res, next) {
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-Width');
     next();
 });
-//HOME 
+/**Home.html
+ * 
+ */
 
 //update likes
 app.put(endPointRoot + "home/like", (req, res) => {
@@ -96,57 +98,6 @@ app.delete(endPointRoot + "home/delete", (req, res) => {
     updateStat("'DELETE'", "'%home/delete%'");
 });
 
-
-//Get posts for homepage
-app.get(endPointRoot + "home", (req, res) => {
-    let objArray = [];
-
-    db.query("SELECT * FROM post", (err, result) => {
-        if (err) throw err;
-
-        for (let i = 0; i < result.length; i++) {
-            let createPostObj = {
-                index: result[i].postID,
-                msg: result[i].message,
-                likes: result[i].likes,
-
-            }
-            objArray.push(createPostObj);
-        }
-
-        res.send(objArray);
-    });
-
-    //update stat table
-    updateStat("'GET'", "'%home%'");
-});
-
-//Get post for post page
-app.get(endPointRoot + "post", (req, res) => {
-    let objArray = [];
-
-    db.query("SELECT * FROM post", (err, result) => {
-        if (err) throw err;
-
-        for (let i = 0; i < result.length; i++) {
-            let createPostObj = {
-                index: result[i].postID,
-                msg: result[i].message,
-                likes: result[i].likes,
-
-            }
-            objArray.push(createPostObj);
-        }
-
-        res.send(objArray);
-    });
-
-    //update stat table
-    updateStat("'GET'", "'%post%'");
-
-});
-
-
 //Get Admin table
 app.get(endPointRoot + "admin", (req, res) => {
     let objArray = [];
@@ -168,8 +119,125 @@ app.get(endPointRoot + "admin", (req, res) => {
         res.send(objArray);
     });
 });
-//Get Post 
+
+
+//Get posts for homepage
+app.get(endPointRoot + "home", (req, res) => {
+    let objArray = [];
+
+    db.query("SELECT * FROM post JOIN user ON post.userID = user.userID", (err, result) => {
+        if (err) throw err;
+
+        for (let i = 0; i < result.length; i++) {
+            let createPostObj = {
+                index: result[i].postID,
+                username: result[i].username,
+                msg: result[i].message,
+                likes: result[i].likes,
+
+            }
+            objArray.push(createPostObj);
+        }
+
+        res.send(objArray);
+    });
+
+    //update stat table
+    updateStat("'GET'", "'%home%'");
+});
+
+/**
+ * POST.HTML
+ */
+//Get post for post page
+app.get(endPointRoot + "post", (req, res) => {
+    let objArray = [];
+
+    db.query("SELECT * FROM post JOIN user ON post.userID = user.userID", (err, result) => {
+        if (err) throw err;
+
+        for (let i = 0; i < result.length; i++) {
+            let createPostObj = {
+                index: result[i].postID,
+                username: result[i].username,
+                msg: result[i].message,
+                likes: result[i].likes,
+
+            }
+            objArray.push(createPostObj);
+        }
+
+        res.send(objArray);
+    });
+
+    //update stat table
+    updateStat("'GET'", "'%post'");
+
+});
 //Get Comment
+app.post(endPointRoot + "post/comment", (req, res) => {
+  
+    let data = "";
+    let postObj = "";
+    req.on('data', function (otherData) {
+        data += otherData
+    })
+    req.on('end', function () {
+        req.rawBody = data;
+        req.jsonBody = JSON.parse(data);
+        postObj = req.jsonBody;
+        let objArray = [];
+        db.query("SELECT * FROM commentUserPost JOIN user ON commentUserPost.userID = user.userID WHERE commentUserPost.postID = "+postObj.pid+" ", (err, result) => {
+            if(result.length == 0){
+                res.send(objArray);
+            }
+            if (err) throw err;
+    
+            for (let i = 0; i < result.length; i++) {
+                let createPostObj = {
+                 
+                    index: result[i].commentID,
+                    name: result[i].username,
+                    msg: result[i].msg,
+    
+                }
+                objArray.push(createPostObj);
+            }
+    
+            res.send(objArray);
+        })
+     });
+    //update stat table
+    updateStat("'POST'", "'%post/comment%'");
+    })
+
+
+//update likes
+app.put(endPointRoot + "post/like", (req, res) => {
+
+    let data = "";
+    let postObj = "";
+    req.on('data', function (otherData) {
+        data += otherData
+    })
+    req.on('end', function () {
+        req.rawBody = data;
+        req.jsonBody = JSON.parse(data);
+        postObj = req.jsonBody;
+
+        let query = "" + 'UPDATE post SET likes = "' + postObj.likes + '" where postID =' + postObj.index;
+        db.query(query,(err, result) => {
+                if (err) {
+                    throw err;
+                };
+                console.log(result);
+        });
+
+
+    })
+    updateStat("'PUT'", "'%post/like%'");
+});
+
 //POST comment
 app.post(endPointRoot + "post/submit", (req, res) => {
 
@@ -194,6 +262,75 @@ app.post(endPointRoot + "post/submit", (req, res) => {
     //update stat table
     updateStat("'POST'", "'%post/submit%'");
 });
+
+
+/**
+ * User page
+ */
+
+//check if user is in db
+app.post(endPointRoot + "user", (req, res) => {
+  
+    let data = "";
+    let postObj = "";
+    req.on('data', function (otherData) {
+        data += otherData
+    })
+    req.on('end', function () {
+        req.rawBody = data;
+        req.jsonBody = JSON.parse(data);
+        postObj = req.jsonBody;
+        let objArray = [];
+        db.query("SELECT * FROM user WHERE username = '"+postObj.name+"' ", (err, result) => {
+            if(result.length == 0){
+                res.send(objArray);
+            }
+            if (err) throw err;
+    
+            for (let i = 0; i < result.length; i++) {
+                let createPostObj = {
+                 
+                    id: result[i].userID,
+                    name: result[i].username
+               
+    
+                }
+                objArray.push(createPostObj);
+            }
+    
+            res.send(objArray);
+        })
+     });
+    //update stat table
+    updateStat("'POST'", "'%user'");
+    })
+
+    //check if user is in db
+app.post(endPointRoot + "user/new", (req, res) => {
+  
+    let data = "";
+    let postObj = "";
+    req.on('data', function (otherData) {
+        data += otherData
+    })
+    req.on('end', function () {
+        req.rawBody = data;
+        req.jsonBody = JSON.parse(data);
+        postObj = req.jsonBody;
+        let q = "INSERT INTO `user` (`username`, `password`) VALUES ('"+postObj.name+"', '"+postObj.pass+"');"
+       db.query(q,(err, result) => {
+                if (err) {
+                    throw err;
+                };
+                console.log(result);
+         });
+
+    })
+    //update stat table
+    updateStat("'POST'", "'%user/new'");
+    })
+
+
 //Updates admin stat table
 function updateStat(method, ep) {
     db.query("SELECT requests FROM stats WHERE method = " + method + "AND endpoint LIKE " + ep + "", (err, result) => {

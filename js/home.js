@@ -32,17 +32,19 @@ function getAllQuestions() {
 
             q.then((dbQuestions) => {
                 console.log('Retrieved items');
-                
+                console.log( dbQuestions[0]["username"]);
                 for (let i = 0; i < dbQuestions.length ; i++) {
-                    console.log("hi" + dbQuestions[i]["index"]);
+           
                     questionsArray.push(dbQuestions[i]);
 
                     let postDiv = document.createElement("div");
                     postDiv.setAttribute("class", "posts");
                     let postUser = document.createElement("div");
-                    let para = document.createTextNode("Demo name " + " username " + i);
+                    let para = document.createTextNode( dbQuestions[i]["username"] + " " + i);
                     postUser.appendChild(para);
                     let moreButt = document.createElement("button");
+                    moreButt.setAttribute("onclick", "viewPost("+i+")");
+                    moreButt.setAttribute("id" , "viewButt_"+i);
                     moreButt.innerHTML = "View More"
                     let deleteButt = document.createElement("button");
                     deleteButt.setAttribute("onclick", "deletePost("+i+")");
@@ -79,19 +81,13 @@ function getAllQuestions() {
 function addLike(i){
  console.log("Likes: " + i);
  let l = 0;
-
      l =questionsArray[i].likes ;
-  
-     
- 
-   
     l++;
     let obj = {
         index: questionsArray[i].index,
         likes: l,
     }
     document.getElementById("likeButt_"+i).innerHTML=l + " Likes";
-    console.log("change " + obj.likes);
     xhttp.open(PUT, endPointRoot + "home/like", true);
     xhttp.setRequestHeader("Content-type", "application/json");
     xhttp.send(JSON.stringify(obj));
@@ -99,7 +95,6 @@ function addLike(i){
         if (this.readyState == 4 && this.status == 200) {
             console.log("Put on the client side is working");
         }
-
     }
 }
 /**
@@ -126,16 +121,26 @@ function deletePost(i){
     }
 }
 
+function viewPost(i){
+    console.log("clicked viewPost: " + questionsArray[i].index );
+    let obj = {
+        index: questionsArray[i].index,
+    
+    }
+    localStorage.setItem("postNum", questionsArray[i].index);
+    window.location.href = './post.html';
+ 
+}
+
 function submitPost() {
    
     let name = document.getElementById("name").innerHTML;
-    let username = document.getElementById("username").innerHTML;
     let i = 0;
     let text = document.getElementById("textBox").value;
 
     let obj = {
-      //  index: questionsArray.length ,
-        id: i,
+ 
+        id: localStorage.getItem("userNum"),
         msg: text,
         likes: "0",
     }
