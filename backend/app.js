@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql");
 const PORT = process.env.PORT || 8888;
 const app = express();
+let url = require("url");
 const endPointRoot = "/COMP4537/labs/termproject/API/V1/"
 const db = mysql.createConnection({
     host: "localhost",
@@ -22,7 +23,7 @@ app.use(function (req, res, next) {
 
 //update likes
 app.put(endPointRoot + "home/like", (req, res) => {
-
+    let d = url.parse(req.url, true);
     let data = "";
     let postObj = "";
     req.on('data', function (otherData) {
@@ -124,8 +125,8 @@ app.get(endPointRoot + "admin", (req, res) => {
             }
             objArray.push(createObj);
         }
-
-        res.send(objArray);
+        res.json(result);
+       // res.send(objArray);
     });
 });
 
