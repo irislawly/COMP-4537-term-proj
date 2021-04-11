@@ -7,9 +7,7 @@ const GET = "GET";
 const PUT = "PUT";
 const POST = "POST";
 
-let count = 1;
-let score = 0;
-let arrayString
+
 let questionsArray = [];
 
 let postArray = [];
@@ -23,10 +21,10 @@ function getTable(){
             }
           })
           .then((res) => {
-           // document.getElementById("stats").innerHTML = "";
+
             for (let i = 0; i < res.length; i++) {
-                questionsArray.push(res[i]);
-              console.log(res[i]);
+              questionsArray.push(res[i]);
+             // console.log(res[i]);
             }
             let table = document.getElementById("table");
             let tbl = document.createElement('table');
@@ -36,8 +34,7 @@ function getTable(){
   
 
             for (var i = 0; i < questionsArray.length; i++) {
-                var tr = tbl.insertRow();
-               
+                var tr = tbl.insertRow();  
                 var td = tr.insertCell();
                 td.appendChild(document.createTextNode(questionsArray[i]["method"]));
                 

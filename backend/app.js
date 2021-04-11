@@ -108,26 +108,17 @@ app.delete(endPointRoot + "home/delete", (req, res) => {
     updateStat("'DELETE'", "'%home/delete%'");
 });
 
-//Get Admin table
+//get stats from admin
 app.get(endPointRoot + "admin", (req, res) => {
-    let objArray = [];
-
+    // GET stat query
     db.query("SELECT * FROM stats", (err, result) => {
-        if (err) throw err;
+        if (err) {
+            throw err;
+        } 
 
-        for (let i = 0; i < result.length; i++) {
-            let createObj = {
-                index: result[i].statID,
-                method: result[i].method,
-                endpoint: result[i].endpoint,
-                req: result[i].requests,
-
-            }
-            objArray.push(createObj);
-        }
         res.json(result);
-       // res.send(objArray);
     });
+
 });
 
 
@@ -161,6 +152,21 @@ app.get(endPointRoot + "home", (req, res) => {
  */
 //Get post for post page
 app.get(endPointRoot + "post", (req, res) => {
+
+        db.query("SELECT postID, username, message, likes FROM post JOIN user ON post.userID = user.userID", (err, result) => {
+            if (err) {
+                throw err;
+            } 
+    
+            res.json(result);
+        });
+
+    //update stat table
+    updateStat("'GET'", "'%post'");
+
+});
+/*
+app.get(endPointRoot + "post", (req, res) => {
     let objArray = [];
 
     db.query("SELECT * FROM post JOIN user ON post.userID = user.userID", (err, result) => {
@@ -180,10 +186,13 @@ app.get(endPointRoot + "post", (req, res) => {
         res.send(objArray);
     });
 
+    
+
     //update stat table
     updateStat("'GET'", "'%post'");
 
 });
+*/
 //Get Comment
 app.post(endPointRoot + "post/comment", (req, res) => {
   
