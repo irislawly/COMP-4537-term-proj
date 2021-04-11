@@ -12,6 +12,7 @@ const db = mysql.createConnection({
 });
 
 app.use(function (req, res, next) {
+    //res.header('Access-Control-Allow-Origin', 'https://www.yiwengu.com');
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-Width');
@@ -165,34 +166,7 @@ app.get(endPointRoot + "post", (req, res) => {
     updateStat("'GET'", "'%post'");
 
 });
-/*
-app.get(endPointRoot + "post", (req, res) => {
-    let objArray = [];
 
-    db.query("SELECT * FROM post JOIN user ON post.userID = user.userID", (err, result) => {
-        if (err) throw err;
-
-        for (let i = 0; i < result.length; i++) {
-            let createPostObj = {
-                index: result[i].postID,
-                username: result[i].username,
-                msg: result[i].message,
-                likes: result[i].likes,
-
-            }
-            objArray.push(createPostObj);
-        }
-
-        res.send(objArray);
-    });
-
-    
-
-    //update stat table
-    updateStat("'GET'", "'%post'");
-
-});
-*/
 //Get Comment
 app.post(endPointRoot + "post/comment", (req, res) => {
   
@@ -336,7 +310,6 @@ app.post(endPointRoot + "user/new", (req, res) => {
         req.rawBody = data;
         req.jsonBody = JSON.parse(data);
         postObj = req.jsonBody;
-    //    let q = "INSERT INTO `user` (`username`, `password`, 'admin') VALUES ('"+postObj.name+"', '"+postObj.pass+"', 0);"
     let q = "INSERT INTO `user` ( `username`, `password`, `admin`) VALUES ( '"+postObj.name+"', '"+postObj.pass+"', '0');"
        db.query(q,(err, result) => {
                 if (err) {
@@ -351,7 +324,6 @@ app.post(endPointRoot + "user/new", (req, res) => {
     })
 
     //delete comment
-    //delete
 app.delete(endPointRoot + "post/comment", (req, res) => {
 
     let data = "";
